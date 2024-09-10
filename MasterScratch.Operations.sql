@@ -45,6 +45,7 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
   SELECT red.AsOfDate,
          COUNT(red.AsOfDate) AS CountDaily
     FROM dbo.RiskEstUniverse red
+   WHERE red.AsOfDate IN (SELECT TOP 5 rex.AsOfDate FROM dbo.RiskEstUniverse rex GROUP BY rex.AsOfDate ORDER BY rex.AsOfDate DESC)
    GROUP BY red.AsOfDate
    ORDER BY red.AsOfDate DESC
   GO
@@ -119,7 +120,7 @@ SELECT sla.AsOfDate,
     SELECT phx.AsOfDate,
           phx.Entity,
           MAX(COALESCE(phx.UpdatedOn, phx.CreatedOn))
-    FROM dbo.PerformanceDetails phx
+     FROM dbo.PerformanceDetails phx
     WHERE phx.AsOfDate = (SELECT MAX(phz.AsOfDate) FROM dbo.PerformanceDetails phz)
     GROUP BY phx.AsOfDate,
           phx.Entity
@@ -130,7 +131,7 @@ SELECT sla.AsOfDate,
           phx.Entity,
           phx.DailyReturn,
           COALESCE(phx.UpdatedOn, phx.CreatedOn) AS DataTimeStamp
-      FROM dbo.PerformanceDetails phx
+     FROM dbo.PerformanceDetails phx
     WHERE phx.Entity IN ('AMF')
     ORDER BY phx.AsOfDate DESC, COALESCE(phx.UpdatedOn, phx.CreatedOn) DESC
 
@@ -138,7 +139,7 @@ SELECT sla.AsOfDate,
           phx.Entity,
           phx.AssetValue,
           COALESCE(phx.UpdatedOn, phx.CreatedOn) AS DataTimeStamp
-      FROM dbo.FundAssetsDetails phx
+     FROM dbo.FundAssetsDetails phx
     WHERE phx.Entity IN ('AMF NAV')
     ORDER BY phx.AsOfDate DESC, COALESCE(phx.UpdatedOn, phx.CreatedOn) DESC
 
@@ -147,7 +148,7 @@ SELECT sla.AsOfDate,
     SELECT apd.AsOfDate,
           COUNT(apd.AsOfDate) AS xCount,
           MAX(COALESCE(apd.UpdatedOn, apd.CreatedOn)) AS UpdateInsertTs
-      FROM dbo.AdminPositionDetails apd
+     FROM dbo.AdminPositionDetails apd
     GROUP BY apd.AsOfDate
     ORDER BY apd.AsOfDate DESC, 
           MAX(COALESCE(apd.UpdatedOn, apd.CreatedOn)) DESC
@@ -156,7 +157,7 @@ SELECT sla.AsOfDate,
     SELECT epd.AsOfDate,
           COUNT(epd.AsOfDate) AS xCount,
           MAX(COALESCE(epd.UpdatedOn, epd.CreatedOn)) AS UpdateInsertTs
-      FROM dbo.EnfPositionDetails epd
+     FROM dbo.EnfPositionDetails epd
     GROUP BY epd.AsOfDate
     ORDER BY epd.AsOfDate DESC, 
           MAX(COALESCE(epd.UpdatedOn, epd.CreatedOn)) DESC

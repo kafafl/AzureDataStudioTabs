@@ -56,11 +56,5 @@ WHERE epd.AsOfDate <= @EndDate ORDER BY epd.AsOfDate DESC
 
 
 
-SELECT epd.AsOfDate,
-epd.BBYellowKey,
-epd.DeltaAdjMV
-FROM dbo.EnfPositionDetails epd
-WHERE epd.AsOfDate >= '04/28/2024'
-AND CHARINDEX('MSA1BIO', epd.BBYellowKey) != 0
-ORDER BY epd.AsOfDate
+
 
