@@ -63,3 +63,37 @@ SELECT epd.DeltaAdjMV,
     WHERE msp.CompTicker = 'SMMT US'
     ORDER BY msp.AsOfDate DESC
 
+
+
+
+
+SELECT TOp 1000 *
+  FROM [dbo].[zRaw_RiskEstUniverse] reu 
+
+
+
+SELECT TOP 100000 * 
+  FROM dbo.AdminPositionDetails apd
+ WHERE apd.AsOfDate = '09/11/2024'
+   AND CHARINDEX('RAPT', apd.BbgCode) != 0
+      
+
+
+
+
+
+SELECT TOP 100 * FROM dbo.EnfPositionDetails epd
+WHERE CHARINDEX('Promis', epd.InstDescr) != 0
+ORDER BY epd.AsOfDate DESC, epd.InstDescr
+
+
+SELECT TOP 100 *
+  FROM dbo.MspbBasketDetails mbd
+ WHERE CHARINDEX('T', mbd.CompTicker) != 0
+   AND mbd.AsOfDate = '09/12/2024'
+ ORDER BY mbd.AsOfDate DESC
+
+
+
+
+

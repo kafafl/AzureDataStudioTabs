@@ -43,11 +43,13 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
   GO
   
   SELECT red.AsOfDate,
+         red.JobReference,
+         MAX(red.CreatedOn) AS UpdateOn,
          COUNT(red.AsOfDate) AS CountDaily
     FROM dbo.RiskEstUniverse red
    WHERE red.AsOfDate IN (SELECT TOP 5 rex.AsOfDate FROM dbo.RiskEstUniverse rex GROUP BY rex.AsOfDate ORDER BY rex.AsOfDate DESC)
-   GROUP BY red.AsOfDate
-   ORDER BY red.AsOfDate DESC
+   GROUP BY red.AsOfDate, red.JobReference
+   ORDER BY red.AsOfDate DESC, MAX(red.CreatedOn) DESC
   GO
 
 
