@@ -8,8 +8,8 @@ CREATE TABLE #tmpOutput(
     MarketValue  FLOAT,
     MtdPnlUsd    FLOAT)
  
-DECLARE @BegDate AS DATE = '07/31/2024'
-DECLARE @EndDate AS DATE = '08/30/2024'
+DECLARE @BegDate AS DATE = '09/30/2024'
+DECLARE @EndDate AS DATE = '10/08/2024'
  
 SELECT TOP 1 @BegDate = epd.AsOfDate FROM dbo.EnfPositionDetails epd
 WHERE epd.AsOfDate <= @BegDate ORDER BY epd.AsOfDate DESC
