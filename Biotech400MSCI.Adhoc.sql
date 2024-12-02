@@ -2,8 +2,7 @@ USE Operations
 GO
 
 
-DECLARE @AsOfDate AS DATE = '10/18/2024'
-
+DECLARE @AsOfDate AS DATE = '11/29/2024'
 
 CREATE TABLE #tmpResults(
     AsOfDate      DATE,
@@ -61,8 +60,6 @@ SELECT bmu.AsOfDate,
         --, bmu.* 
   FROM dbo.BiotechMasterUniverse bmu
  WHERE bmu.AsOfDate = @AsOfDate
-
-
 
 
 
@@ -159,7 +156,7 @@ SELECT bmu.AsOfDate,
          FROM #tmpResults rdc  
 
 
-SELECT * FROM #tmpResults trs WHERE trs.Industry IN ('Pharmaceuticals', 'Biotechnology') AND COALESCE(trs.Rebate, 0) >= 3.0 AND COALESCE(trs.AvgVol, 0) >= 750000 
+SELECT * FROM #tmpResults trs WHERE trs.Industry IN ('Pharmaceuticals', 'xBiotechnology') AND COALESCE(trs.Rebate, 0) >= 3.0 AND COALESCE(trs.AvgVol, 0) >= 750000 
 
 SELECT * FROM #tmpResults trs WHERE trs.Industry IN ('Pharmaceuticals', 'Biotechnology') AND trs.Rebate IS NULL
 

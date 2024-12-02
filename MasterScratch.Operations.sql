@@ -1,6 +1,7 @@
 USE Operations
 GO
 
+EXEC dbo.p_GetSimplePort
 
 DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
 
@@ -27,10 +28,11 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
     GO
   
     SELECT mmu.AsOfDate,
-           COUNT(mmu.AsOfDate) AS CountDaily
+           COUNT(mmu.AsOfDate) AS CountDaily,
+           mmu.ParentEntity
       FROM dbo.MarketMasterUniverse mmu
-     GROUP BY mmu.AsOfDate
-     ORDER BY mmu.AsOfDate DESC
+     GROUP BY mmu.AsOfDate, mmu.ParentEntity
+     ORDER BY mmu.AsOfDate DESC, mmu.ParentEntity
     GO
 
 
@@ -101,9 +103,10 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
    GROUP BY amd.AsOfDate,
          amd.TagMnemonic
    ORDER BY amd.AsOfDate DESC,
-         amd.TagMnemonic
+         --amd.TagMnemonic,
+         MAX(COALESCE(amd.UpdatedOn, amd.CreatedOn)) DESC
   GO
-         
+
 
 /*  MSPB Availability DATA  */
   SELECT TOP 100 * 

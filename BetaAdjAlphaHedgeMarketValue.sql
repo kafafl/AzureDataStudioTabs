@@ -18,15 +18,15 @@ SELECT '2024-09-30', 'AMF', 'ZIM', 'ZIM US Equity', 0.78, SUSER_NAME(), GETDATE(
 
 SELECT TOP 100 * 
   FROM dbo.StatisticalBetaValues sbv 
- WHERE sbv.BbgYellowKey IN ('MSA14568 Index', 'xMSA1BIOH Index', 'xIWM US Equity', 'xSPY US Equity', 'xXBI US Equity')
- AND sbv.AsOfDate BETWEEN '08/30/2024' AND '10/22/2024'
+ WHERE sbv.BbgYellowKey IN ('xMSA14568 Index', 'MSA1BIOH Index', 'xIWM US Equity', 'xSPY US Equity', 'xXBI US Equity')
+ AND sbv.AsOfDate BETWEEN '10/28/2024' AND '10/30/2024'
  ORDER BY sbv.AsOfDate
 
 UPDATE sbv 
-   SET sbv.BmkBeta = 1.00 
+   SET sbv.BmkBeta = 1.38 
   FROM dbo.StatisticalBetaValues sbv 
- WHERE sbv.AsOfDate BETWEEN '08/30/2024' AND '10/14/2024'
-   AND sbv.BbgYellowKey = 'XBI US Equity'
+ WHERE sbv.AsOfDate BETWEEN '10/29/2024' AND '10/29/2024'
+   AND sbv.BbgYellowKey = 'MSA1BIOH Index'
 
 UPDATE sbv 
    SET sbv.BmkBeta = 0.75 
@@ -85,8 +85,8 @@ UPDATE sbv SET sbv.BmkBeta = 0.15 FROM dbo.StatisticalBetaValues sbv WHERE sbv.A
 
 
 DECLARE @AsOfDate AS DATE
-DECLARE @BegDate AS DATE = '09/01/2024'
-DECLARE @EndDate AS DATE = '09/30/2024'
+DECLARE @BegDate AS DATE = '10/01/2024'
+DECLARE @EndDate AS DATE = '10/31/2024'
 
   INSERT INTO #tmpDates(
          AsOfDate)
@@ -220,6 +220,17 @@ DECLARE @EndDate AS DATE = '09/30/2024'
           JOIN dbo.StatisticalBetaValues sbv
             ON rdc.AsOfDate = sbv.AsOfDate
           AND CHARINDEX(sbv.Ticker, rdc.BbgTicker) != 0 
+
+    /*  NO BETA ADJUSTMENT FOR EX-US Longs */
+        UPDATE rdc
+           SET rdc.StatBeta = 1  /* we do not beta adjust ex-US */
+          FROM #tmpResults rdc
+          
+          --JOIN dbo.MSCiCorrelations msci
+            --ON rdc.AsOfDate = msci.AsOfDate
+           --AND CHARINDEX(msci.BbgYellowKey, rdc.BbgTicker) != 0
+         
+         WHERE rdc.BbgTicker IN ('MSA14568 Index') 
 
 
     /*  SET BetaAdjMktVal  */

@@ -64,8 +64,8 @@ UPDATE sbv SET sbv.BmkBeta = 1.34 FROM dbo.StatisticalBetaValues sbv WHERE sbv.A
 
 
 DECLARE @AsOfDate AS DATE
-DECLARE @BegDate AS DATE = '09/01/2024'
-DECLARE @EndDate AS DATE = '09/30/2024'
+DECLARE @BegDate AS DATE = '10/01/2024'
+DECLARE @EndDate AS DATE = '10/31/2024'
 
   INSERT INTO #tmpDates(
          AsOfDate)

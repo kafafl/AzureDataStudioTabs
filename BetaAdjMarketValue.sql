@@ -8,19 +8,60 @@ WHERE dmt.AsOfDate BETWEEN '08/01/2024' AND '10/16/2024'
 AND dmt.IsWeekday = 1
 ORDER BY dmt.AsOfDate
 
-SELECT TOP 100 * FROM dbo.StatisticalBetaValues sbv WHERE sbv.BbgYellowKey = 'CG US Equity'
+
+SELECT TOP 100 * FROM dbo.StatisticalBetaValues sbv 
+WHERE sbv.BbgYellowKey = 'ZVRA US Equity'
+--AND sbv.AsOfDate IN ('2024-10-03', '2024-10-14', '2024-10-25', '2024-10-28')
 ORDER BY sbv.AsOfDate DESC
+
+
+UPDATE sbv SET sbv.BmkBeta = 0.99 FROM dbo.StatisticalBetaValues sbv WHERE sbv.Iid IN (12987, 12919, 12791, 11746, 11604, 11178, 10951, 9971, 9835, 9279, 9208, 8936, 8659, 8586, 8522)
+
 
 INSERT INTO dbo.StatisticalBetaValues(AsOfDate, PortfolioName, Ticker, BbgYellowKey, BmkBeta, CreatedBy, CreatedOn)
 SELECT '2024-09-03', 'AMF', 'CLYM', 'CLYM US Equity', 1.3, SUSER_NAME(), GETDATE()
 
 
+SELECT TOP 100 * FROM dbo.StatisticalBetaValues sbv 
+WHERE sbv.BbgYellowKey = 'CLYM US Equity'
+--AND sbv.AsOfDate IN ('2024-10-03', '2024-10-14', '2024-10-25', '2024-10-28')
+ORDER BY sbv.AsOfDate DESC
 
 INSERT INTO dbo.StatisticalBetaValues(AsOfDate, PortfolioName, Ticker, BbgYellowKey, BmkBeta, CreatedBy, CreatedOn)
-SELECT '2024-09-24', 'AMF', 'CGEM', 'CGEM US Equity', 1.14, SUSER_NAME(), GETDATE()
+SELECT '2024-10-01', 'AMF', 'CLYM', 'CLYM US Equity', 1.3, SUSER_NAME(), GETDATE()
 
+INSERT INTO dbo.StatisticalBetaValues(AsOfDate, PortfolioName, Ticker, BbgYellowKey, BmkBeta, CreatedBy, CreatedOn)
+SELECT '2024-10-02', 'AMF', 'CLYM', 'CLYM US Equity', 1.3, SUSER_NAME(), GETDATE()
+
+UPDATE sbv SET sbv.Ticker = 'CLYM' FROM dbo.StatisticalBetaValues sbv WHERE sbv.Iid IN(  13058, 13057)
+
+
+
+SELECT TOP 100 * FROM dbo.StatisticalBetaValues sbv 
+WHERE sbv.BbgYellowKey = 'WVE US Equity'
+--AND sbv.AsOfDate IN ('2024-10-03', '2024-10-14', '2024-10-25', '2024-10-28')
+ORDER BY sbv.AsOfDate DESC
+
+INSERT INTO dbo.StatisticalBetaValues(AsOfDate, PortfolioName, Ticker, BbgYellowKey, BmkBeta, CreatedBy, CreatedOn)
+SELECT '2024-10-16', 'AMF', 'WVE', 'WVE US Equity', 1.58, SUSER_NAME(), GETDATE()
+
+
+
+UPDATE sbv SET sbv.Ticker = 'CLYM' FROM dbo.StatisticalBetaValues sbv WHERE sbv.Iid IN(  13058, 13057)
+
+
+SELECT TOP 100 * FROM dbo.StatisticalBetaValues sbv 
+WHERE sbv.BbgYellowKey = 'RCKT US Equity'
+--AND sbv.AsOfDate IN ('2024-10-03', '2024-10-14', '2024-10-25', '2024-10-28')
+ORDER BY sbv.AsOfDate DESC
+
+INSERT INTO dbo.StatisticalBetaValues(AsOfDate, PortfolioName, Ticker, BbgYellowKey, BmkBeta, CreatedBy, CreatedOn)
+SELECT '2024-10-01', 'AMF', 'RCKT', 'RCKT US Equity', 1.83, SUSER_NAME(), GETDATE()
+
+UPDATE sbv SET sbv.BmkBeta = 1.83 FROM dbo.StatisticalBetaValues sbv WHERE sbv.BbgYellowKey = 'RCKT US Equity' AND sbv.AsOfDate IN ('2024-10-03', '2024-10-14', '2024-10-25', '2024-10-28')
 
 */
+
 
 
   CREATE TABLE #tmpDates(
@@ -67,8 +108,8 @@ SELECT '2024-09-24', 'AMF', 'CGEM', 'CGEM US Equity', 1.14, SUSER_NAME(), GETDAT
 
 
 DECLARE @AsOfDate AS DATE
-DECLARE @BegDate AS DATE = '09/01/2024'
-DECLARE @EndDate AS DATE = '09/30/2024'
+DECLARE @BegDate AS DATE = '10/01/2024'
+DECLARE @EndDate AS DATE = '11/29/2024'
 
   INSERT INTO #tmpDates(
          AsOfDate)
@@ -184,6 +225,10 @@ DECLARE @EndDate AS DATE = '09/30/2024'
             SET rdc.PriceUsd = CASE WHEN rdc.Crncy = 'JPY' THEN rdc.Price / rdc.FxRate ELSE rdc.Price * rdc.FxRate END
           FROM #tmpResults rdc
 
+        UPDATE rdc
+            SET rdc.PriceUsd = CASE WHEN rdc.Crncy = 'JPY' THEN rdc.Price / rdc.FxRate ELSE rdc.Price * rdc.FxRate END
+          FROM #tmpResults rdc
+
     /*  SET MARKET VALUE USD  */
         UPDATE rdc 
             SET rdc.MarketValue = Quantity * PriceUsd
@@ -197,9 +242,9 @@ DECLARE @EndDate AS DATE = '09/30/2024'
             ON rdc.AsOfDate = sbv.AsOfDate
           AND CHARINDEX(sbv.Ticker, rdc.BbgTicker) != 0 
 
-    /*  USE MSCI BETA IN SOME CASES */
+    /*  NO BETA ADJUSTMENT FOR EX-US Longs */
         UPDATE rdc
-           SET rdc.StatBeta = 0.34 --msci.BmkCorr
+           SET rdc.StatBeta = 1  /* we do not beta adjust ex-US */
           FROM #tmpResults rdc
           
           --JOIN dbo.MSCiCorrelations msci

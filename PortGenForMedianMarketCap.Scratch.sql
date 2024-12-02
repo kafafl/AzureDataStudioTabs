@@ -5,7 +5,7 @@ GO
 /* FOR MONTH END MARKET CAP */
   SELECT COALESCE(UnderlyBBYellowKey, BBYellowKey) AS Ticker 
     FROM dbo.EnfPositionDetails epd
-   WHERE epd.AsOfDate = '07/31/2024'
+   WHERE epd.AsOfDate = '10/31/2024'
      AND epd.StratName IN ('Alpha Long', 'Alpha Short')
      AND ROUND(epd.Quantity, 0) != 0
      AND epd.InstrType = 'Equity'
@@ -14,6 +14,18 @@ GO
    GROUP BY COALESCE(UnderlyBBYellowKey, BBYellowKey)
   HAVING ROUND(SUM(epd.Quantity), 0) != 0       
    ORDER BY COALESCE(UnderlyBBYellowKey, BBYellowKey)
+
+
+
+/*
+
+SELECT TOp 10000 * FROM dbo.EnfPositionDetails epd WHERE epd.BBYellowKey = 'LIAN US Equity' AND epd.Quantity != 0 ORDER BY epd.AsOfDate DESC
+
+SELECT TOp 10000 * FROM dbo.EnfPositionDetails epd WHERE epd.BBYellowKey = 'ABIO US Equity' AND epd.Quantity != 0 ORDER BY epd.AsOfDate DESC
+
+
+SELECT TOp 1 * FROM dbo.EnfPositionDetails epd WHERE epd.BBYellowKey = 'ABIO US Equity'
+
 
 
 
@@ -117,6 +129,9 @@ WHERE epd.AsOfDate = '07/31/2024'
 AND CHARINDEX('ZURA', epd.BBYellowKey) != 0
 
 
+*/
+
+SELECT RAND() AS SomeNum, GETDATE() AS SomeTime
 
 
 
