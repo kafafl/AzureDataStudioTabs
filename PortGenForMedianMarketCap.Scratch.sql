@@ -5,7 +5,7 @@ GO
 /* FOR MONTH END MARKET CAP */
   SELECT COALESCE(UnderlyBBYellowKey, BBYellowKey) AS Ticker 
     FROM dbo.EnfPositionDetails epd
-   WHERE epd.AsOfDate = '10/31/2024'
+   WHERE epd.AsOfDate = '11/29/2024'
      AND epd.StratName IN ('Alpha Long', 'Alpha Short')
      AND ROUND(epd.Quantity, 0) != 0
      AND epd.InstrType = 'Equity'

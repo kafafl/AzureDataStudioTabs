@@ -2,7 +2,7 @@ USE Operations
 GO
 
 
-DECLARE @AsOfDate AS DATE = '11/29/2024'
+DECLARE @AsOfDate AS DATE = '12/12/2024'
 
 CREATE TABLE #tmpResults(
     AsOfDate      DATE,

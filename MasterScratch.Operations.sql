@@ -13,7 +13,8 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
     GO
   
     SELECT bmu.AsOfDate,
-           COUNT(bmu.AsOfDate) AS CountDaily
+           COUNT(bmu.AsOfDate) AS CountDaily,
+           MAX(bmu.SysStartTime) AS SysTime
       FROM dbo.BiotechMasterUniverse bmu
      GROUP BY bmu.AsOfDate
      ORDER BY bmu.AsOfDate DESC

@@ -55,7 +55,6 @@ GO
     BbgYellowKey     VARCHAR(255),
     BmkBeta          FLOAT)
 
-
 DECLARE @AsOfDate AS DATE
 DECLARE @BegDate AS DATE = '09/01/2024'
 DECLARE @EndDate AS DATE = '11/29/2024'
@@ -89,7 +88,8 @@ DECLARE @EndDate AS DATE = '11/29/2024'
             PosNet,
             PosShort,
             Crncy)
-       EXEC dbo.p_GetHedgePortfolio @AsOfDate = @AsOfDate, @bIncludeOptions = 1, @bRetCrncy = 1
+       EXEC dbo.p_GetOtherPortfolio @AsOfDate = @AsOfDate, @bIncludeOptions = 1, @bRetCrncy = 1
+
 
     /* SET THE BASIS OF THE PORTFOLIO */
        INSERT INTO #tmpResults(
@@ -120,6 +120,26 @@ DECLARE @EndDate AS DATE = '11/29/2024'
          WHERE amd.DataSource = 'Bloomberg'  
            AND amd.TagMnemonic = 'LAST_PRICE' 
 
+    /*  PRICE WATERFALL STEP 1.5 - BIOTECH UNIVERSE PRICES  */
+        UPDATE rdc 
+           SET rdc.Price = bmu.Price,
+               rdc.PriceSource = 'BMU'
+          FROM #tmpResults rdc  
+          JOIN dbo.BiotechMasterUniverse bmu 
+            ON rdc.AsOfDate = bmu.AsOfDate 
+           AND rdc.BbgTicker = bmu.BbgTicker
+           AND rdc.Price IS NULL
+
+    /*  PRICE WATERFALL STEP 1.5 - MARKET UNIVERSE PRICES  */          
+        UPDATE rdc 
+           SET rdc.Price = bmu.Price,
+               rdc.PriceSource = 'MMU'
+          FROM #tmpResults rdc  
+          JOIN dbo.MarketMasterUniverse bmu 
+            ON rdc.AsOfDate = bmu.AsOfDate 
+           AND rdc.BbgTicker = bmu.BbgTicker
+           AND rdc.Price IS NULL
+
     /*  PRICE WATERFALL STEP 2 - ENF PRICES  */
         UPDATE rdc 
            SET rdc.Price = amd.FairValue,
@@ -147,19 +167,14 @@ DECLARE @EndDate AS DATE = '11/29/2024'
     /*  PRICE WATERFALL END           */
     /*  XXXXXXXXXXXXXXXXXXXXXXXXXXXX  */
 
-    /*  SET CURRENCY CODE  */
+    /*  SET CURRENCY CODE  
         UPDATE rdc 
            SET rdc.Crncy = amd.CcyOne
           FROM #tmpResults rdc  
           JOIN dbo.EnfPositionDetails amd 
             ON rdc.AsOfDate = amd.AsOfDate 
            AND rdc.BbgTicker = CASE WHEN amd.InstrType = 'Listed Option' THEN amd.UnderlyBBYellowKey ELSE CASE WHEN amd.BBYellowKey = '' THEN amd.UnderlyBBYellowKey  ELSE amd.BBYellowKey END END
-
-    /*  SET CURRENCY CODE  */
-        UPDATE rdc 
-           SET rdc.Crncy = 'JPY'
-          FROM #tmpResults rdc  
-         WHERE rdc.BbgTicker = 'MSA14568 Index' 
+    */
 
     /*  SET FXRATE FOR FX  */
         UPDATE rdc 
@@ -167,26 +182,25 @@ DECLARE @EndDate AS DATE = '11/29/2024'
           FROM #tmpResults rdc  
           JOIN dbo.PriceHistory amd 
             ON rdc.AsOfDate = amd.AsOfDate 
-            AND rdc.Crncy + ' Curncy' = amd.PositionId   
-            AND amd.TagMnemonic = 'LAST_PRICE' 
+           AND rdc.Crncy + ' Curncy' = amd.PositionId   
+           AND amd.TagMnemonic = 'LAST_PRICE' 
    
     /*  SET FX RATE FOR USD  */ 
         UPDATE rdc 
-            SET rdc.FxRate = 1.00
+           SET rdc.FxRate = 1.00
           FROM #tmpResults rdc  
-          WHERE rdc.Crncy = 'USD'
-            AND rdc.FxRate IS NULL
+         WHERE rdc.Crncy = 'USD'
+           AND rdc.FxRate IS NULL
 
     /*  DOLLARIZE NON-USD PRICES  */
         UPDATE rdc
-            SET rdc.PriceUsd = CASE WHEN rdc.Crncy = 'JPY' THEN rdc.Price / rdc.FxRate ELSE rdc.Price * rdc.FxRate END
+           SET rdc.PriceUsd = CASE WHEN rdc.Crncy = 'JPY' THEN rdc.Price / rdc.FxRate ELSE rdc.Price * rdc.FxRate END
           FROM #tmpResults rdc
 
     /*  SET MARKET VALUE USD  */
         UPDATE rdc 
-            SET rdc.MarketValue = Quantity * PriceUsd
+           SET rdc.MarketValue = Quantity * PriceUsd
           FROM #tmpResults rdc
-
 
 /*  >>>>>> >>>>>> +++++++ <<<<< <<<<<  */
 /*  >>>>>> ALL ABOUT THE BETAS  <<<<<  */
@@ -262,7 +276,6 @@ DECLARE @EndDate AS DATE = '11/29/2024'
                BetaAdjMktVal
           FROM #tmpResultsFinal
 
-
     /*  ROLL ON TO THE NEXT DAY  */
         UPDATE tdy 
            SET tdy.bProcessed = 1 
@@ -271,6 +284,8 @@ DECLARE @EndDate AS DATE = '11/29/2024'
         
     END
 
+        
+        
         SELECT AsOfDate,
                Strategy,
                BbgTicker,
