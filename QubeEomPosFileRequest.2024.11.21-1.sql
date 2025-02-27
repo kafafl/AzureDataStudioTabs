@@ -51,6 +51,10 @@ INSERT INTO #tmpDates (AsOfDate) SELECT '07/31/2024'
 INSERT INTO #tmpDates (AsOfDate) SELECT '08/30/2024'
 INSERT INTO #tmpDates (AsOfDate) SELECT '09/30/2024'
 INSERT INTO #tmpDates (AsOfDate) SELECT '10/31/2024'
+INSERT INTO #tmpDates (AsOfDate) SELECT '11/29/2024'
+INSERT INTO #tmpDates (AsOfDate) SELECT '12/31/2024'
+
+INSERT INTO #tmpDates (AsOfDate) SELECT '1/31/2025'
 
 --DECLARE @BegDate AS DATE = '09/30/2024'
 --DECLARE @EndDate AS DATE = '09/30/2024'
@@ -184,6 +188,14 @@ SELECT epd.AsOfDate,
    FROM #tmpOutput toc
   WHERE COALESCE(toc.BBG, '') = '' AND COALESCE(toc.[Custom Identifier], '') = ''
 
+            
+      SELECT * 
+        FROM #tmpOutput toc 
+       WHERE (COALESCE(toc.BBG, '') != '' OR COALESCE(toc.[Custom Identifier], '') != '')
+       ORDER BY toc.AsOfDate, toc.InstDescr
+            
+            
+RETURN
 
 /*   XXXXXXXXXXXXXXXX   */
 /*   EXTRACT THE DATA   */

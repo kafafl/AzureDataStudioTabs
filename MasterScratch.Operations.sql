@@ -20,6 +20,13 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
      ORDER BY bmu.AsOfDate DESC
     GO
 
+/*
+   UPDATE bmu
+   SET bmu.AsOfDate = '02/11/2025'
+   FROM dbo.BiotechMasterUniverse bmu
+   WHERE bmu.AsOfDate = '02/12/2025'
+*/
+
 
 /*  MARKET UNIVERSE  */
     SELECT TOP 500 mmu.* 
@@ -36,6 +43,12 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
      ORDER BY mmu.AsOfDate DESC, mmu.ParentEntity
     GO
 
+/*
+   UPDATE mmu
+   SET mmu.AsOfDate = '02/11/2025'
+   FROM dbo.MarketMasterUniverse mmu
+   WHERE mmu.AsOfDate = '02/12/2025'
+*/
 
 
 /* RISK ESTIMATION UNIVERSE FACTOR RETURNS  */
@@ -95,6 +108,14 @@ DECLARE @AsOfDate AS DATE = CAST(GETDATE() AS DATE)
    GROUP BY amd.AsOfDate
    ORDER BY amd.AsOfDate DESC
   GO
+
+/*
+   UPDATE amd
+   SET amd.AsOfDate = '02/11/2025'
+   FROM dbo.AmfMarketData amd
+   WHERE amd.AsOfDate = '02/12/2025'
+*/
+  
 
   SELECT amd.AsOfDate,
          amd.TagMnemonic,

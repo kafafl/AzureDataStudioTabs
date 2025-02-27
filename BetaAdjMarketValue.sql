@@ -58,8 +58,8 @@ GO
 
 
 DECLARE @AsOfDate AS DATE
-DECLARE @BegDate AS DATE = '09/01/2024'
-DECLARE @EndDate AS DATE = '11/29/2024'
+DECLARE @BegDate AS DATE = '12/01/2024'
+DECLARE @EndDate AS DATE = '12/31/2024'
 
   INSERT INTO #tmpDates(
          AsOfDate)
@@ -69,7 +69,6 @@ DECLARE @EndDate AS DATE = '11/29/2024'
      AND dmx.IsWeekday = 1
      AND dmx.IsMktHoliday = 0
 
-
   WHILE EXISTS(SELECT TOP 1 tdd.AsOfDate FROM #tmpDates tdd WHERE tdd.bProcessed = 0)
     BEGIN
 
@@ -77,7 +76,6 @@ DECLARE @EndDate AS DATE = '11/29/2024'
         FROM #tmpDates tdx
        WHERE tdx.bProcessed = 0 
        ORDER BY tdx.AsOfDate
-
 
 /*   CLEAR CONTENTS OF DAILY TABLE  */
      DELETE tpx FROM #tmpPortfolio tpx
@@ -169,14 +167,6 @@ DECLARE @EndDate AS DATE = '11/29/2024'
     /*  PRICE WATERFALL END           */
     /*  XXXXXXXXXXXXXXXXXXXXXXXXXXXX  */
 
-    /*  SET CURRENCY CODE  
-        UPDATE rdc 
-           SET rdc.Crncy = amd.CcyOne
-          FROM #tmpResults rdc  
-          JOIN dbo.EnfPositionDetails amd 
-            ON rdc.AsOfDate = amd.AsOfDate 
-           AND rdc.BbgTicker = CASE WHEN amd.InstrType = 'Listed Option' THEN amd.UnderlyBBYellowKey ELSE CASE WHEN amd.BBYellowKey = '' THEN amd.UnderlyBBYellowKey  ELSE amd.BBYellowKey END END
-    */
 
     /*  SET FXRATE FOR FX  */
         UPDATE rdc 
@@ -196,7 +186,10 @@ DECLARE @EndDate AS DATE = '11/29/2024'
 
     /*  DOLLARIZE NON-USD PRICES  */
         UPDATE rdc
-           SET rdc.PriceUsd = CASE WHEN rdc.Crncy = 'JPY' THEN rdc.Price / rdc.FxRate ELSE rdc.Price * rdc.FxRate END
+           SET rdc.PriceUsd = CASE WHEN rdc.Crncy = 'JPY' OR rdc.Crncy = 'CAD' 
+                                   THEN rdc.Price / rdc.FxRate 
+                                   ELSE rdc.Price * rdc.FxRate 
+                              END
           FROM #tmpResults rdc
 
     /*  SET MARKET VALUE USD  */
@@ -298,7 +291,6 @@ DECLARE @EndDate AS DATE = '11/29/2024'
                BbgTicker
 
 RETURN
-
 
 
 

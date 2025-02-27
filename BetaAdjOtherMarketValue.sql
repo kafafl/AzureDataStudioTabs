@@ -56,8 +56,8 @@ GO
     BmkBeta          FLOAT)
 
 DECLARE @AsOfDate AS DATE
-DECLARE @BegDate AS DATE = '09/01/2024'
-DECLARE @EndDate AS DATE = '11/29/2024'
+DECLARE @BegDate AS DATE = '12/01/2024'
+DECLARE @EndDate AS DATE = '12/31/2024'
 
   INSERT INTO #tmpDates(
          AsOfDate)
